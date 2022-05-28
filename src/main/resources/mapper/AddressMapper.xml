@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.firenut.store.mapper.AddressMapper">
+
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="aid">
+     INSERT INTO t_address (
+        uid, name, province_name, province_code, city_name, city_code, area_name, area_code, zip,
+        address, phone, tel,tag, is_default, created_user, created_time, modified_user, modified_time)
+         VALUES (
+        #{uid}, #{name}, #{provinceName}, #{provinceCode}, #{cityName}, #{cityCode}, #{areaName},
+        #{areaCode}, #{zip}, #{address}, #{phone}, #{tel}, #{tag}, #{isDefault}, #{createdUser},
+        #{createdTime}, #{modifiedUser}, #{modifiedTime}
+        )
+    </insert>
+
+
+
+    <!--    返回的是类型是Integer要声明，不然会报错-->
+    <select id="countByUId" resultType="java.lang.Integer">
+        select count(*) from t_address where uid=#{uid}
+    </select>
+
+    <select id="findByUid" resultType="com.firenut.store.entity.Address">
+        select * from t_address where uid=#{uid}
+        order by is_default DESC,created_time DESC
+    </select>
+
+
+    <select id="findByAid" resultType="com.firenut.store.entity.Address">
+        select * from t_address where aid=#{aid}
+    </select>
+
+
+
+
+    <update id="updateDefaultByAid">
+        update t_address set is_default=1,modified_user=#{modifiedUser},modified_time=#{modifiedTime}
+        where aid=#{aid}
+    </update>
+
+
+    <update id="updateNoneDefault">
+        update t_address set is_default=0 where uid=#{uid}
+    </update>
+
+
+    <select id="findLastModified" resultType="com.firenut.store.entity.Address">
+        select * from t_address where uid=#{uid} order by modified_time DESC limit 0,1
+    </select>
+
+    <delete id="deleteByAid">
+        delete from t_address where aid=#{aid}
+    </delete>
+
+</mapper>

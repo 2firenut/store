@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.firenut.store.mapper.CartMapper">
+
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="cid">
+        INSERT INTO t_cart (uid, pid, price, num, created_user, created_time, modified_user, modified_time)
+        VALUES (#{uid}, #{pid}, #{price}, #{num}, #{createdUser}, #{createdTime}, #{modifiedUser}, #{modifiedTime})
+    </insert>
+
+
+    <update id="updateNumByCid">
+       UPDATE
+            t_cart
+        SET
+            num=#{num},
+            modified_user=#{modifiedUser},
+            modified_time=#{modifiedTime}
+        WHERE
+            cid=#{cid}
+    </update>
+
+    <select id="findByUidAndPid" resultType="com.firenut.store.entity.Cart">
+        SELECT
+            *
+        FROM
+            t_cart
+        WHERE
+            uid=#{uid} AND pid=#{pid}
+    </select>
+
+    <select id="getVoByUid" resultType="com.firenut.store.vo.CartVo">
+        select
+            cid,uid,pid,t_cart.price,t_cart.num,t_product.title,
+            t_product.price as realPrice,t_product.image
+        from t_cart
+        left join t_product
+        on t_cart.pid=t_product.id
+        where uid=#{uid}
+        order by t_cart.created_time desc
+    </select>
+
+    <select id="findByCid" resultType="com.firenut.store.entity.Cart">
+        select * from t_cart where cid=#{cid}
+    </select>
+
+    <select id="findVOByCids" resultType="com.firenut.store.vo.CartVo">
+        SELECT
+            cid,
+            uid,
+            pid,
+            t_cart.price,
+            t_cart.num,
+            t_product.title,
+            t_product.price AS realPrice,
+            t_product.image
+        FROM
+            t_cart
+            LEFT JOIN t_product ON t_cart.pid = t_product.id
+        WHERE
+            cid IN (
+                <foreach collection="cids" item="cid" separator=",">
+                    #{cid}
+                </foreach>
+            )
+        ORDER BY
+            t_cart.created_time DESC
+    </select>
+
+
+</mapper>
